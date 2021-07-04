@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="/Users/a.saril/2020/INFO151/data bases/LibraryDB.sqlite" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><current_tab id="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2564"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="Customer"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="BusReg" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk=""><sort/><column_widths/><filter_values/><display_formats/><hidden_columns/><plot_y_axes/></table><table schema="main" name="Customer" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk=""><sort/><column_widths/><filter_values><column index="2" value="Kim"/><column index="3" value=""/></filter_values><display_formats/><hidden_columns/><plot_y_axes/></table><table schema="main" name="InventoryItem" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk=""><sort/><column_widths/><filter_values/><display_formats/><hidden_columns/><plot_y_axes/></table><table schema="main" name="Loan" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk=""><sort><column index="1" mode="0"/></sort><column_widths/><filter_values><column index="1" value=""/><column index="2" value="259"/><column index="6" value=""/></filter_values><display_formats/><hidden_columns/><plot_y_axes/></table><table schema="main" name="Media" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk=""><sort><column index="2" mode="0"/></sort><column_widths/><filter_values/><display_formats/><hidden_columns/><plot_y_axes/></table><table schema="main" name="Passenger" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk=""><sort><column index="2" mode="0"/></sort><column_widths/><filter_values/><display_formats/><hidden_columns/><plot_y_axes/></table><table schema="main" name="Transport" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk=""><sort/><column_widths/><filter_values/><display_formats/><hidden_columns/><plot_y_axes/></table></browse_table_settings></tab_browse><tab_sql><sql name="Assignment3_Q1.sql">SELECT ID AS &quot;MediaID&quot;, MAX(Cost) AS &quot;Maximum Total Replacement Cost&quot;, MAX(Title) AS &quot;Total Number of Loans&quot;
+FROM (
+			SELECT I.MediaID AS &quot;ID&quot;, COUNT(I.Title) AS &quot;Title&quot;, SUM(I.ReplacementCost) AS &quot;Cost&quot;
+			FROM Item I JOIN InventoryItem II JOIN Loan L
+			ON I.ItemID = II.ItemID AND II.InventoryItemID = L.InventoryItemID
+			WHERE L.CheckedIn IS NULL
+			GROUP BY I.MediaID)</sql><sql name="Assignment3_Q2.sql">SELECT count(DISTINCT(C.CustomerID)) AS &quot;Total Number of Students&quot;,
+			(SELECT AVG(L.OverdueFee) 
+			FROM Customer C JOIN Loan L
+			ON C.CustomerID = L.CustomerID
+			WHERE C.FirstName = 'Soing' AND C.LastName = 'Kim') AS &quot;Kim Average Overdue Fee&quot;
+FROM Customer C JOIN Loan L
+ON C.CustomerID = L.CustomerID
+WHERE L.OverdueFee &lt; 2 * &quot;Kim Average Overdue Fee&quot;</sql><sql name="Assignment3_Q3.sql">UPDATE Loan
+SET DueDate = datetime(DueDate, &quot;+7 days&quot;, &quot;+7 hours&quot;, &quot;+7 minutes&quot;)
+WHERE LoanID IN ( 
+					SELECT LoanID
+					FROM Customer C JOIN Loan L JOIN InventoryItem II JOIN Item I JOIN Media M 
+					ON C.CustomerID = L.CustomerID AND L.InventoryItemID = II.InventoryItemID 
+					AND II.ItemID = I.ItemID AND I.MediaID = M.MediaID
+					WHERE C.Major = &quot;INFO&quot; AND CheckedIn IS NULL AND MediaCode = &quot;FD&quot;)</sql><sql name="Assignment3_Q4.sql">CREATE TABLE BusReg(
+							'BusID' INTEGER PRIMARY KEY AUTOINCREMENT,
+							'RegNum' TEXT,
+							'WOF' TEXT);
+							
+CREATE TABLE Passenger(
+							'PassengerID' INTEGER,
+							'PassengerFName' TEXT,
+							'PassengerLName' TEXT,
+							'Email' TEXT,
+							'Mobile' TEXT, 
+							PRIMARY KEY(&quot;PassengerID&quot;));
+
+CREATE TABLE Transport(
+							'BusID' INTEGER,
+							'RouteNum' INTEGER,
+							'Date' TEXT,
+							'PassengerID' INTEGER,
+							'TIMEIN' TEXT,
+							'TIMEOUT' TEXT,
+							PRIMARY KEY('BusID','Date', 'PassengerID', 'TIMEIN')
+							FOREIGN KEY('BusID') REFERENCES BusReg('BusID'),
+							FOREIGN KEY('PassengerID') REFERENCES Passenger('PassengerID'));
+							
+--4b) Transport table should be created last, as it used FOREIGN KEYS which needs REFERENCES to the other 2 tables. 
+--4c) There is no relationship between the BusReg table and the Passenger table. 
+--4d) One composite PRIMARY Key with 4 attributes, Two FOREIGN Keys.
+							</sql><sql name="Assignment3_Q5.sql">INSERT INTO BusReg(BusID, RegNum, WOF)
+VALUES('1', 'XZ123456', '2020-05-10');
+INSERT INTO BusReg(BusID, RegNum, WOF)
+VALUES('2', 'ZC321546', '2020-01-01');
+INSERT INTO BusReg(BusID, RegNum, WOF)
+VALUES('3', 'XC432234', '2020-03-01');
+
+INSERT INTO Passenger(PassengerID, PassengerFName, PassengerLName, Email, Mobile)
+VALUES('1', 'Jim', 'Richard', 'jim.Richard@gmail.com', '0223989876');
+INSERT INTO Passenger(PassengerID, PassengerFName, PassengerLName, Email, Mobile)
+VALUES('2', 'Kim', 'Ng', 'kim.ng@gmail.com', '0226758907');
+INSERT INTO Passenger(PassengerID, PassengerFName, PassengerLName, Email, Mobile)
+VALUES('3', 'Elsie', 'Alsion', 'Elsie.Alison@gmail.com', '0227899876');
+
+INSERT INTO Transport(BusID, RouteNum, Date, PassengerID, TIMEIN, TIMEOUT)
+VALUES('1', '22', '2020-05-05', '1', '09:00', '09:40');
+INSERT INTO Transport(BusID, RouteNum, Date, PassengerID, TIMEIN, TIMEOUT)
+VALUES('1', '22', '2020-05-05', '2', '11:00', '12:15');
+INSERT INTO Transport(BusID, RouteNum, Date, PassengerID, TIMEIN, TIMEOUT)
+VALUES('1', '22', '2020-05-05', '2', '09:30', '09:55');
+INSERT INTO Transport(BusID, RouteNum, Date, PassengerID, TIMEIN, TIMEOUT)
+VALUES('1', '22', '2020-05-05', '2', '12:00', '13:33');
+INSERT INTO Transport(BusID, RouteNum, Date, PassengerID, TIMEIN, TIMEOUT)
+VALUES('1', '22', '2020-05-05', '3', '11:07', '12:05');
+INSERT INTO Transport(BusID, RouteNum, Date, PassengerID, TIMEIN, TIMEOUT)
+VALUES('2', '54', '2020-05-06', '1', '14:00', '15:00');
+INSERT INTO Transport(BusID, RouteNum, Date, PassengerID, TIMEIN, TIMEOUT)
+VALUES('2', '54', '2020-05-06', '2', '14:45', '15:55');
+INSERT INTO Transport(BusID, RouteNum, Date, PassengerID, TIMEIN, TIMEOUT)
+VALUES('3', '3', '2020-05-07', '3', '09:00', '10:45');
+
+</sql><sql name="Assignment3_Q6a.sql">SELECT A.PassengerID AS &quot;A_PassengerID&quot;, B.PassengerID AS &quot;B_PassengerID&quot;, 
+A.date, A.RouteNum AS &quot;Route&quot;, A.TIMEIN AS &quot;A_TIMEIN&quot;, A.TIMEOUT AS &quot;A_TIMEOUT&quot;, B.TIMEIN AS &quot;B_TIMEIN&quot;
+FROM Transport A, Transport B 
+ON A.BusID = B.BusID AND A.Date = B.Date AND &quot;B_TIMEIN&quot; &lt;= &quot;A_TIMEOUT&quot; AND &quot;B_TIMEIN&quot; &gt;= &quot;A_TIMEIN&quot;
+WHERE A.PassengerID != B.PassengerID</sql><sql name="Assignment3_Q6b.sql">SELECT PSNGR.Date, PSNGR.&quot;A_PassengerID&quot;, PSNGR.&quot;B_PassengerID&quot;, count(PSNGR.A_passengerID || PSNGR.B_passengerID) AS &quot;Number of Times Contacted&quot;
+FROM(
+		SELECT T1.PassengerID AS &quot;A_passengerID&quot;, T2.PassengerID AS &quot;B_passengerID&quot;, T1.Date, 
+		T1.RouteNum AS &quot;Route&quot;, T1.TIMEIN AS &quot;A_TimeIN&quot;, T1.TIMEOUT AS &quot;A_TimeOut&quot;, T2.TIMEIN AS &quot;B_TimeIN&quot;
+		FROM Transport T1 JOIN Transport T2
+		ON T1.date = T2.date
+		WHERE(T1.TIMEIN &lt; T2.TIMEIN AND T2.TIMEIN &lt; T1.TIMEOUT) AND T1.Date = T2.date AND T1.PassengerID != T2.PassengerID) PSNGR
+GROUP BY PSNGR.date, PSNGR.&quot;A_PassengerID&quot;, PSNGR.&quot;B_PassengerID&quot;;	</sql><sql name="Assignment3_Q7.sql">DELETE FROM Loan 
+WHERE EXISTS (SELECT *
+						FROM InventoryItem I 
+						WHERE I.Status = 'Lost' AND Loan.CheckedIn IS NULL
+						)
+</sql><current_tab id="2"/></tab_sql></sqlb_project>
