@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="/Users/a.saril/2020/INFO151/Assignment1/LibraryDB (1).sqlite" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><current_tab id="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2564"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="Customer"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="Assignment1_Q1.sql">SELECT LastName, FirstName, MemberSince
+FROM Customer
+Where (MemberSince &gt;= 2010 AND MemberSince &lt;= 2015)
+ORDER BY MemberSince DESC, LastName ASC;</sql><sql name="Assignment1_Q2.sql">SELECT Title, MediaID
+FROM Item
+WHERE (Title LIKE '%.NET%' OR '%iOS%') AND (MediaID = 3 OR MediaID = 4)
+ORDER BY Title ASC;</sql><sql name="Assignment1_Q3.sql">SELECT Author, Title, MediaID
+FROM Item
+WHERE (Title != '%.NET%') AND (MediaID != 1 OR MediaID != 2 OR MediaID != 6)
+ORDER BY Author ASC;</sql><sql name="Assignment1_Q4.sql">SELECT Title, PubYear AS &quot;YearPublished&quot;,  ReplacementCost AS &quot;ReplacementCost(OLD)&quot;, 
+(ReplacementCost * 1.10) AS &quot;ReplacementCost(NEW)&quot;, round(&quot;ReplacementCost(OLD)&quot;,1) AND round(&quot;ReplacementCost(NEW)&quot;,1)
+FROM Item
+WHERE (&quot;YearPublished&quot; BETWEEN 2013 AND 2015) 
+ORDER BY &quot;YearPublished&quot; DESC;</sql><sql name="Assignment1_Q5.sql">SELECT Author, Title AS &quot;Book Title&quot;
+FROM Item
+WHERE (&quot;Book Title&quot; != '%-%' AND &quot;Book Title&quot; NOT LIKE '% %')
+ORDER BY &quot;Book Title&quot; DESC;</sql><sql name="Assignment1_Q6.sql">SELECT FirstName, LastName
+FROM Customer
+WHERE (LastName NOT LIKE '%a%') AND (FirstName NOT LIKE '%e%')
+ORDER BY LastName ASC;</sql><sql name="Assignment1_Q7.sql">SELECT ItemID, Title, PubYear
+FROM Item
+WHERE (PubYear % 2 != 0 AND PubYear != 2013)
+ORDER BY PubYear ASC;</sql><sql name="Assignment1_Q8.sql">SELECT DISTINCT CustomerID, InventoryItemID, OverdueFee
+FROM Loan
+WHERE OverdueFee IS NULL
+ORDER BY CustomerID ASC;</sql><current_tab id="7"/></tab_sql></sqlb_project>
